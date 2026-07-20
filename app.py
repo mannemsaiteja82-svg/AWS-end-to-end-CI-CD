@@ -10,4 +10,3 @@ def home():
 if __name__ == '__main__':
     # Keeps your fixed public networking configuration active!
     app.run(host='0.0.0.0', port=5000)
-
