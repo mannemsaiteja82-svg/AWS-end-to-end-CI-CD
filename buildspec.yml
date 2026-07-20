@@ -5,17 +5,18 @@ env:
     DOCKER_REGISTRY_USERNAME: /myapp/docker-credentials/username
     DOCKER_REGISTRY_PASSWORD: /myapp/docker-credentials/password
     DOCKER_REGISTRY_URL: /myapp/docker-credentials/url
+
 phases:
   install:
     runtime-versions:
       python: 3.11
+      
   pre_build:
     commands:
       - echo "Installing dependencies..."
       - pip install -r requirements.txt
+      
   build:
-    commands:
-        build:
     commands:
       - echo "Logging into Docker Hub..."
       - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
@@ -27,7 +28,9 @@ phases:
   post_build:
     commands:
       - echo "Build completed successfully!"
+      - echo "Generating ECS image definitions deployment file..."
+      - printf '[{"name":"flask-app-container","imageUri":"%s"}]' "$DOCKER_REGISTRY_USERNAME/simple-python-flask-app:latest" > imagedefinitions.json
+
 artifacts:
   files:
-    - '**/*'
-  base-directory: ../simple-python-app
+    - imagedefinitions.json
